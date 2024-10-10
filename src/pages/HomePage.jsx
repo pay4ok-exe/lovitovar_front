@@ -12,6 +12,7 @@ import kidsGoodsImage from "../assets/kids-goods.png";
 import homeGoodsImage from "../assets/home-goods.png";
 import iphone13Image from "../assets/iphone13.png";
 import { FilterContext } from "../context/FilterContext";
+import Footer from "../components/Footer";
 // import beautyImage from "../assets/beauty.jpg";
 
 // Define categories with imported images
@@ -24,47 +25,64 @@ const categories = [
   { name: "Товары для дома", image: homeGoodsImage, checked: false },
   //   { name: "Красота и здоровье", image: beautyImage },
 ];
+const sampleListings = [
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+  {
+    title: "Iphone 13",
+    description: "Новый, есть коробка",
+    price: "30 000 ₽",
+    image: iphone13Image,
+  },
+];
 
 const HomePage = () => {
-  const sampleListings = [
-    {
-      title: "Iphone 13",
-      description: "Новый, есть коробка",
-      price: "30 000 ₽",
-      image: iphone13Image,
-    },
-    {
-      title: "Iphone 13",
-      description: "Новый, есть коробка",
-      price: "30 000 ₽",
-      image: iphone13Image,
-    },
-    {
-      title: "Iphone 13",
-      description: "Новый, есть коробка",
-      price: "30 000 ₽",
-      image: iphone13Image,
-    },
-    {
-      title: "Iphone 13",
-      description: "Новый, есть коробка",
-      price: "30 000 ₽",
-      image: iphone13Image,
-    },
-    {
-      title: "Iphone 13",
-      description: "Новый, есть коробка",
-      price: "30 000 ₽",
-      image: iphone13Image,
-    },
-    {
-      title: "Iphone 13",
-      description: "Новый, есть коробка",
-      price: "30 000 ₽",
-      image: iphone13Image,
-    },
-    // Add more sample data here
-  ];
   return (
     <FilterProvider>
       <div className="min-h-screen bg-gray-100">
@@ -73,6 +91,7 @@ const HomePage = () => {
           <CategorySection categories={categories} />
           <ListingSection listings={sampleListings} categories={categories} />
         </main>
+        <Footer />
       </div>
     </FilterProvider>
   );

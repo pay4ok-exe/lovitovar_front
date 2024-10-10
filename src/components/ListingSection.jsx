@@ -28,38 +28,40 @@ const ListingSection = ({ listings, categories }) => {
     <section className="py-10 bg-gray-100">
       <div className="max-w-screen-xl mx-auto px-6 lg:px-8 flex">
         {/* Filter Sidebar */}
-        <aside className="sticky top-20 bg-white p-4 w-1/4 shadow-lg">
-          <h3 className="font-bold text-lg mb-4">Фильтры</h3>
-          <div>
-            <h4 className="font-semibold mb-2">Категории</h4>
-            {categories.map((category, index) => (
-              <div key={index} className="mb-1">
-                <label className="inline-flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(category.name)} // Corrected to use category.name
-                    onChange={() => toggleCategory(category.name)} // Corrected to pass category.name
-                    className="form-checkbox text-indigo-600"
-                  />
-                  <span className="ml-2">{category.name}</span>
-                </label>
-              </div>
-            ))}
+        <aside className="bg-white p-4 w-1/4 shadow-lg">
+          <div className="sticky top-20">
+            <h3 className="font-bold text-lg mb-4">Фильтры</h3>
+            <div>
+              <h4 className="font-semibold mb-2">Категории</h4>
+              {categories.map((category, index) => (
+                <div key={index} className="mb-1">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedCategories.includes(category.name)} // Corrected to use category.name
+                      onChange={() => toggleCategory(category.name)} // Corrected to pass category.name
+                      className="form-checkbox text-indigo-600"
+                    />
+                    <span className="ml-2">{category.name}</span>
+                  </label>
+                </div>
+              ))}
 
-            <h4 className="font-semibold mt-4 mb-2">Цена</h4>
-            {priceRanges.map((price, index) => (
-              <div key={index} className="mb-1">
-                <label className="inline-flex items-center">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox text-indigo-600"
-                  />
-                  <span className="ml-2">
-                    {price.range} ({price.count})
-                  </span>
-                </label>
-              </div>
-            ))}
+              <h4 className="font-semibold mt-4 mb-2">Цена</h4>
+              {priceRanges.map((price, index) => (
+                <div key={index} className="mb-1">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox text-indigo-600"
+                    />
+                    <span className="ml-2">
+                      {price.range} ({price.count})
+                    </span>
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         </aside>
 
