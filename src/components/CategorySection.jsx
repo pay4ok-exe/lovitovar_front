@@ -1,26 +1,8 @@
-// CategorySection.jsx
-import React from "react";
-// Import images
-import clothesImage from "../assets/clothes.png";
-import petsImage from "../assets/pets.png";
-import servicesImage from "../assets/services.png";
-import electronicsImage from "../assets/electronics.png";
-import kidsGoodsImage from "../assets/kids-goods.png";
-import homeGoodsImage from "../assets/home-goods.png";
-// import beautyImage from "../assets/beauty.jpg";
+import React, { useContext } from "react";
+import { FilterContext } from "../context/FilterContext";
 
-// Define categories with imported images
-const categories = [
-  { name: "Одежда, обувь, аксессуары", image: clothesImage },
-  { name: "Животные", image: petsImage },
-  { name: "Услуги", image: servicesImage },
-  { name: "Электроника", image: electronicsImage },
-  { name: "Товары для детей", image: kidsGoodsImage },
-  { name: "Товары для дома", image: homeGoodsImage },
-  //   { name: "Красота и здоровье", image: beautyImage },
-];
-
-const CategorySection = () => {
+const CategorySection = ({ categories }) => {
+  const { selectedCategories, toggleCategory } = useContext(FilterContext);
   return (
     <section className="py-10">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,12 +11,14 @@ const CategorySection = () => {
           {categories.map((category, index) => (
             <div
               key={index}
-              className="relative rounded-lg bg-[#ebeae8] flex flex-row-reverse">
+              className={`relative rounded-lg bg-[#ebeae8] flex flex-row-reverse cursor-pointer ${
+                selectedCategories.includes(category.name) ? "bg-[#d9d7d5]" : ""
+              }`}
+              onClick={() => toggleCategory(category.name)}>
               <img
                 src={category.image}
                 alt={category.name}
                 className="w-36 h-full object-cover"
-                // style={{ height: "150px" }}
               />
               <div className="absolute bottom-0 left-0 top-0 w-3 py-2 px-3 text-sm text-gray-700 rounded-b-lg">
                 {category.name}
