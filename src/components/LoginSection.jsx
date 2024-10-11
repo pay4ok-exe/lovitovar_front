@@ -65,7 +65,7 @@ const LoginSection = ({
         <div className="flex items-center justify-between">
           <div className="text-sm">
             <a
-              href="/forgot-password"
+              href="/forgot"
               className="font-medium text-indigo-600 hover:text-indigo-500">
               Забыли пароль?
             </a>
