@@ -12,7 +12,9 @@ const CategorySection = ({ categories }) => {
             <div
               key={index}
               className={`relative rounded-lg bg-[#ebeae8] flex flex-row-reverse cursor-pointer ${
-                selectedCategories.includes(category.name) ? "bg-[#d9d7d5]" : ""
+                selectedCategories.includes(category.name)
+                  ? "bg-[#d0cac3]"
+                  : "bg-[#ebeae8]"
               }`}
               onClick={() => toggleCategory(category.name)}>
               <img
