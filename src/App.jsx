@@ -16,6 +16,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/about" element={<AboutUsPage />} />
         <Route path="/contact" element={<ContactUsPage />} />
+        <Route path="/contact" element={<ContactUsPage />} />
       </Routes>
     </BrowserRouter>
   );
