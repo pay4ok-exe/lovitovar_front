@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import VerificationCodeInput from "../components/VerificationCodeInput";
@@ -10,6 +11,7 @@ const ForgotPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   // Handle form submission for each step
   const handleSubmit = (event) => {
@@ -30,6 +32,7 @@ const ForgotPage = () => {
         alert("Password reset successful!");
         setNewPassword("");
         setConfirmPassword("");
+        navigate("/login");
       } else {
         alert("Passwords do not match. Please try again.");
       }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const LoginSection = ({
   email,
@@ -64,11 +65,11 @@ const LoginSection = ({
 
         <div className="flex items-center justify-between">
           <div className="text-sm">
-            <a
-              href="/forgot"
+            <Link
+              to="/forgot"
               className="font-medium text-indigo-600 hover:text-indigo-500">
               Забыли пароль?
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -83,11 +84,11 @@ const LoginSection = ({
         <div className="text-center">
           <p className="text-sm text-gray-600">
             Нет аккаунта?{" "}
-            <a
-              href="/register"
+            <Link
+              to="/register"
               className="font-medium text-indigo-600 hover:text-indigo-500 hover:underline">
               Регистрация
-            </a>
+            </Link>
           </p>
         </div>
       </form>
