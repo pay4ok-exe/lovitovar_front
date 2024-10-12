@@ -40,8 +40,8 @@ const Footer = () => {
           <div>
             <h6 className="font-bold text-lg mb-2">Контакты</h6>
             <ul className="text-sm">
-              <li>Тел: +7 999 999 9999</li>
-              <li>Email: info@lovitovar.ru</li>
+              <li>Тел: (МТС) +375 (33) 303-57-22</li>
+              <li>Email: rudakovia@gmail.com</li>
             </ul>
           </div>
           <div>
