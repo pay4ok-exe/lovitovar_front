@@ -2,17 +2,25 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import LoginSection from "../components/LoginSection";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Handle login logic here
-    alert("Hello");
-    console.log("Login submitted:", { email, password });
+
+    // Example logic for handling login; replace with real authentication logic
+    if (email === "test@example.com" && password === "password") {
+      console.log("Login successful:", { email, password });
+      alert("Login successful");
+      navigate("/profile"); // Navigate to the profile page after successful login
+    } else {
+      alert("Invalid email or password");
+    }
   };
 
   return (

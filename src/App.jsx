@@ -17,10 +17,11 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot" element={<ForgotPage />} />
         <Route path="/auth-required" element={<AuthRequiredPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/about" element={<AboutUsPage />} />
         <Route path="/contact" element={<ContactUsPage />} />
-        <Route path="/contact" element={<ContactUsPage />} />
+        {/* Profile Page with Sub-routes */}
+        <Route path="/profile/*" element={<ProfilePage />} />{" "}
+        {/* ProfilePage handles sub-routes */}
       </Routes>
     </BrowserRouter>
   );
