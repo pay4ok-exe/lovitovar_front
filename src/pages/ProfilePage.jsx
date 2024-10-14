@@ -3,14 +3,12 @@ import { Routes, Route, Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PersonalData from "../components/PersonalData";
-import Messages from "../components/Messages";
 import Notifications from "../components/Notifications";
 import Settings from "../components/Settings";
 import MyPosts from "../components/MyPosts";
 
 // Photos
 import UserIcon from "../assets/user.png";
-import ChatIcon from "../assets/chat.png";
 import RingingIcon from "../assets/ringing.png";
 import PostsIcon from "../assets/online.png";
 import SettingsIcon from "../assets/cogwheel.png";
@@ -77,22 +75,14 @@ const ProfilePage = () => {
             </ul>
           </aside> */}
 
-          <aside className="w-64 bg-white p-4 shadow-md flex flex-col justify-around rounded-lg mr-4">
-            <ul className="space-y-4">
+          <aside className="pl-8 w-64 bg-white p-4 shadow-md flex flex-col justify-around rounded-lg mr-4">
+            <ul className="space-y-8 mt-4">
               <li>
                 <Link
                   to="/profile/"
                   className="flex items-center space-x-2 text-gray-700">
                   <img src={UserIcon} alt="Личные данные" className="h-5 w-5" />
                   <span>Личные данные</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/messages"
-                  className="flex items-center space-x-2 text-gray-700">
-                  <img src={ChatIcon} alt="Сообщения" className="h-5 w-5" />
-                  <span>Сообщения</span>
                 </Link>
               </li>
               <li>
@@ -128,7 +118,7 @@ const ProfilePage = () => {
                 </Link>
               </li>
             </ul>
-            <div className="mt-auto">
+            <div className="mt-auto mb-4">
               <Link
                 to="/"
                 className="flex items-center space-x-2 text-gray-700">
@@ -142,7 +132,6 @@ const ProfilePage = () => {
           <main className="bg-white shadow-md rounded-lg p-6 flex-1">
             <Routes>
               <Route path="/" element={<PersonalData />} />
-              <Route path="messages" element={<Messages />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="my-posts" element={<MyPosts />} />
               <Route path="settings" element={<Settings />} />
