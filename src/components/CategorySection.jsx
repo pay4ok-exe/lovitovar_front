@@ -7,13 +7,13 @@ const CategorySection = ({ categories }) => {
     <section className="py-10">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Категории</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 justify-center">
           {categories.map((category, index) => (
             <div
               key={index}
               className={`relative rounded-lg bg-[#ebeae8] flex flex-row-reverse cursor-pointer ${
                 selectedCategories.includes(category.name)
-                  ? "bg-[#d0cac3]"
+                  ? "bg-[#dbba93]"
                   : "bg-[#ebeae8]"
               }`}
               onClick={() => toggleCategory(category.name)}>
