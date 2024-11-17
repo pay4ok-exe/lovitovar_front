@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { FilterContext } from "../context/FilterContext";
 import Pagination from "./Pagination";
 
 const ListingSection = ({ listings, categories }) => {
   const { selectedCategories, toggleCategory } = useContext(FilterContext);
+  const navigate = useNavigate();
 
   // Filter listings based on selected categories
   const filteredListings =
@@ -69,7 +71,10 @@ const ListingSection = ({ listings, categories }) => {
         <div className="flex-1 ml-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center">
             {filteredListings.map((listing, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-lg p-4">
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-lg p-4"
+                onClick={() => navigate(`/product/${listing.id}`)}>
                 <img
                   src={listing.image}
                   alt={listing.title}

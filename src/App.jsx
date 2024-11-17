@@ -7,6 +7,7 @@ import AboutUsPage from "./pages/AboutUsPage";
 import ContactUsPage from "./pages/ContactUsPage";
 import ForgotPage from "./pages/ForgotPage";
 import AuthRequiredPage from "./pages/AuthRequiredPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         {/* Profile Page with Sub-routes */}
         <Route path="/profile/*" element={<ProfilePage />} />{" "}
         {/* ProfilePage handles sub-routes */}
+        <Route path="/product/:id" element={<ProductDetailPage />} />
       </Routes>
     </BrowserRouter>
   );
