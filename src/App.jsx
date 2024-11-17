@@ -8,8 +8,11 @@ import ContactUsPage from "./pages/ContactUsPage";
 import ForgotPage from "./pages/ForgotPage";
 import AuthRequiredPage from "./pages/AuthRequiredPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import AddProductPage from "./pages/AddProductPage";
 
 function App() {
+  const isAuthenticated = !!localStorage.getItem("token");
+
   return (
     <BrowserRouter>
       <Routes>
@@ -24,6 +27,10 @@ function App() {
         <Route path="/profile/*" element={<ProfilePage />} />{" "}
         {/* ProfilePage handles sub-routes */}
         <Route path="/product/:id" element={<ProductDetailPage />} />
+        <Route
+          path="/add-product"
+          element={isAuthenticated ? <AddProductPage /> : <AuthRequiredPage />}
+        />
       </Routes>
     </BrowserRouter>
   );

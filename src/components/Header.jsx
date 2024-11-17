@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Logo from "../assets/logo.png";
 
 const Header = () => {
+  const isAuthenticated = !!localStorage.getItem("token");
   return (
     <header className="fixed top-0 w-full z-10 bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,7 +52,7 @@ const Header = () => {
           {/*  */}
           <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0 gap-2">
             <Link
-              to="/auth-required"
+              to={isAuthenticated ? "/add-product" : "/auth-required"}
               className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
               Разместить объявление
             </Link>
