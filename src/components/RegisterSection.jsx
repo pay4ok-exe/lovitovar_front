@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 const RegisterSection = ({
   username,
@@ -9,6 +9,8 @@ const RegisterSection = ({
   setPassword,
   confirmPassword,
   setConfirmPassword,
+  phone,
+  setPhone, // Добавлено
   showPassword,
   setShowPassword,
   handleSubmit,
@@ -52,6 +54,22 @@ const RegisterSection = ({
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="phone" className="sr-only">
+              Телефон
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="text"
+              autoComplete="tel"
+              required
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm z-0"
+              placeholder="Телефон"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           <div className="relative">

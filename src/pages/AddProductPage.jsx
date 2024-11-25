@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const AddProductPage = () => {
+  const navigate = useNavigate();
   const [product, setProduct] = useState({
     title: "",
     price: "",
@@ -27,11 +29,38 @@ const AddProductPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      // Form submission logic (e.g., POST request)
+      // Replace the following with your backend API call
+      const formData = new FormData();
+      formData.append("title", product.title);
+      formData.append("price", product.price);
+      formData.append("description", product.description);
+      formData.append("category", product.category);
+      formData.append("image", product.image);
+
+      // Simulated API call (replace with axiosInstance or fetch)
+      setTimeout(() => {
+        setLoading(false);
+        alert("Объявление успешно добавлено!");
+        navigate("/"); // Redirect after success
+      }, 2000);
+    } catch (error) {
+      console.error("Ошибка при добавлении продукта:", error);
+      alert("Не удалось добавить объявление.");
       setLoading(false);
-      alert("Форма отправлена! (Логика добавления отсутствует)");
-    }, 2000);
+    }
   };
+
+  useEffect(() => {
+    // Check if the token exists in localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // Navigate to /auth-required if no token is found
+      navigate("/auth-required");
+    }
+  }, [navigate]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">

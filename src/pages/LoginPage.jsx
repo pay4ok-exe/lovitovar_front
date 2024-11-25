@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import LoginSection from "../components/LoginSection";
-import { useNavigate } from "react-router-dom";
+import axiosInstance from "../axios/axiosInstance"; // Import your axios instance
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -10,16 +11,28 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Example logic for handling login; replace with real authentication logic
-    if (email === "test@example.com" && password === "password") {
-      console.log("Login successful:", { email, password });
-      alert("Login successful");
-      navigate("/profile"); // Navigate to the profile page after successful login
-    } else {
-      alert("Invalid email or password");
+    try {
+      // Send login data to the backend
+      const response = await axiosInstance.post("/login", { email, password });
+
+      // Handle successful login
+      const { token, ...userData } = response.data;
+      console.log("Login successful:", userData);
+
+      // Save token to localStorage
+      localStorage.setItem("token", token);
+
+      // Navigate to the profile page
+      navigate("/profile");
+    } catch (error) {
+      console.error(
+        "Login failed:",
+        error.response?.data?.message || error.message
+      );
+      alert(error.response?.data?.message || "Не удалось авторизоваться!");
     }
   };
 

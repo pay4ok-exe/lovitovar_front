@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FilterProvider } from "../context/FilterContext";
 import CategorySection from "../components/CategorySection";
 import ListingSection from "../components/ListingSection";
-import axios from "../axios/axios";
+import axiosInstance from "../axios/axiosInstance";
+import { Skeleton, Grid } from "@mui/material"; // Добавлено
 
-import iphone13Image from "../assets/iphone13.png";
-
+// Define categories (предположим, они статичны)
 import servicesImage from "../assets/services.png";
 import kidsGoodsImage from "../assets/kids-goods.png";
 import carGoodsImage from "../assets/carGoods.png";
@@ -19,9 +19,6 @@ import homeGoodsImage from "../assets/home-goods.png";
 import petsImage from "../assets/pets.png";
 import anotherThingsImage from "../assets/anotherThings.png";
 
-// import beautyImage from "../assets/beauty.jpg";
-
-// Define categories with imported images
 const categories = [
   { name: "Одежда и аксессуары", image: clothesImage, checked: false },
   { name: "Косметика и здоровье", image: beautyImage, checked: false },
@@ -34,66 +31,27 @@ const categories = [
   { name: "Спорт и отдых", image: sportsImage, checked: false },
   { name: "Другое", image: anotherThingsImage, checked: false },
 ];
-const sampleListings = [
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-  {
-    title: "Iphone 13",
-    description: "Новый, есть коробка",
-    price: "30 000 ₽",
-    image: iphone13Image,
-  },
-];
 
 const HomePage = () => {
+  const [listings, setListings] = useState([]); // Состояние для данных с бэкенда
+  const [loading, setLoading] = useState(true); // Состояние для загрузки
+
   useEffect(() => {
-    axios.get("/products");
+    const fetchProducts = async () => {
+      try {
+        const response = await axiosInstance.get("/products");
+        const arr = response.data.products; // Убедитесь, что здесь правильное поле с данными
+
+        // Дублируем данные, объединяя массив с самим собой
+        setListings(arr);
+      } catch (error) {
+        console.error("Ошибка при загрузке продуктов:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   return (
@@ -102,7 +60,12 @@ const HomePage = () => {
         <Header />
         <main className="pt-20">
           <CategorySection categories={categories} />
-          <ListingSection listings={sampleListings} categories={categories} />
+          {/* Отображаем Skeleton или ListingSection */}
+          <ListingSection
+            listings={listings}
+            categories={categories}
+            loading={loading}
+          />
         </main>
         <Footer />
       </div>

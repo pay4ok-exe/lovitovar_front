@@ -11,8 +11,6 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import AddProductPage from "./pages/AddProductPage";
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem("token");
-
   return (
     <BrowserRouter>
       <Routes>
@@ -27,10 +25,7 @@ function App() {
         <Route path="/profile/*" element={<ProfilePage />} />{" "}
         {/* ProfilePage handles sub-routes */}
         <Route path="/product/:id" element={<ProductDetailPage />} />
-        <Route
-          path="/add-product"
-          element={isAuthenticated ? <AddProductPage /> : <AuthRequiredPage />}
-        />
+        <Route path="/add-product" element={<AddProductPage />} />
       </Routes>
     </BrowserRouter>
   );

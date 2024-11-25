@@ -18,6 +18,7 @@ const VerificationCodeInput = ({ onCompleted }) => {
     }
 
     // If all slots are filled
+    const correctCode = newCode.every((item) => item !== "");
     if (newCode.every((item) => item !== "")) {
       onCompleted(newCode.join("")); // Pass the completed code to parent component
     }

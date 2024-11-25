@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import VerificationCodeInput from "../components/VerificationCodeInput";
+import axiosInstance from "../axios/axiosInstance"; // Import axios instance
 
 const ForgotPage = () => {
   const [step, setStep] = useState(1); // Track the current step in the flow
@@ -10,31 +11,79 @@ const ForgotPage = () => {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // Handle form submission for each step
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (step === 1) {
-      console.log("Password reset request for:", email);
-      setSubmitted(true);
-      setStep(2); // Move to step 2
+      // Step 1: Request password reset
+      try {
+        setLoading(true);
+        const response = await axiosInstance.post("/forgot-password", {
+          email,
+        });
+        console.log("Password reset request successful:", response.data);
+        alert("Reset code sent to your email!");
+        setStep(2);
+      } catch (error) {
+        console.error(
+          "Error requesting password reset:",
+          error.response?.data?.message || error.message
+        );
+        alert(error.response?.data?.message || "Failed to send reset code.");
+      } finally {
+        setLoading(false);
+      }
     } else if (step === 2) {
-      console.log("Code entered:", code);
-      // Validate code (for demo purposes, assume it's valid)
-      setStep(3); // Move to step 3 (new password)
+      // Step 2: Verify the reset code
+      try {
+        setLoading(true);
+        console.log("Hello", code);
+        const response = await axiosInstance.post("/verify-code", {
+          email,
+          code,
+        });
+        console.log("Code verified successfully:", response.data);
+        alert("Code verified successfully!");
+        setStep(3);
+      } catch (error) {
+        console.error(
+          "Error verifying code:",
+          error.response?.data?.message || error.message
+        );
+        alert(error.response?.data?.message || "Invalid or expired code.");
+      } finally {
+        setLoading(false);
+      }
     } else if (step === 3) {
-      if (newPassword === confirmPassword) {
-        console.log("New password submitted:", newPassword);
-        // Process the new password submission
-        alert("Password reset successful!");
-        setNewPassword("");
-        setConfirmPassword("");
-        navigate("/login");
-      } else {
+      // Step 3: Reset the password
+      if (newPassword !== confirmPassword) {
         alert("Passwords do not match. Please try again.");
+        return;
+      }
+      try {
+        setLoading(true);
+        const response = await axiosInstance.post("/confirm-password", {
+          email,
+          code,
+          newPassword,
+        });
+        console.log("Password reset successful:", response.data);
+        alert(
+          "Password reset successful! You can now log in with your new password."
+        );
+        navigate("/login");
+      } catch (error) {
+        console.error(
+          "Error resetting password:",
+          error.response?.data?.message || error.message
+        );
+        alert(error.response?.data?.message || "Failed to reset password.");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -75,17 +124,12 @@ const ForgotPage = () => {
                 <div>
                   <button
                     type="submit"
+                    disabled={loading}
                     className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Send Reset Link
+                    {loading ? "Sending..." : "Send Reset Link"}
                   </button>
                 </div>
               </form>
-              {submitted && (
-                <div className="text-center mt-4 text-sm font-semibold text-indigo-600">
-                  If an account with that email exists, we sent an email to{" "}
-                  {email} with a link to reset your password.
-                </div>
-              )}
             </div>
           )}
 
@@ -98,30 +142,13 @@ const ForgotPage = () => {
                 Please enter the 4-digit code sent to your email address.
               </p>
               <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                <div className="rounded-md shadow-sm -space-y-px">
-                  {/* <div>
-                    <label htmlFor="code" className="sr-only">
-                      Code
-                    </label>
-                    <input
-                      id="code"
-                      name="code"
-                      type="text"
-                      maxLength="4"
-                      required
-                      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                      placeholder="4-digit code"
-                      value={code}
-                      onChange={(e) => setCode(e.target.value)}
-                    />
-                  </div> */}
-                  <VerificationCodeInput />
-                </div>
+                <VerificationCodeInput value={code} onCompleted={setCode} />
                 <div>
                   <button
                     type="submit"
+                    disabled={loading}
                     className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Verify Code
+                    {loading ? "Verifying..." : "Verify Code"}
                   </button>
                 </div>
               </form>
@@ -172,8 +199,9 @@ const ForgotPage = () => {
                 <div>
                   <button
                     type="submit"
+                    disabled={loading}
                     className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Reset Password
+                    {loading ? "Resetting..." : "Reset Password"}
                   </button>
                 </div>
               </form>

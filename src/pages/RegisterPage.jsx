@@ -2,22 +2,44 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import RegisterSection from "../components/RegisterSection";
+import axiosInstance from "../axios/axiosInstance"; // Настроенный axios
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState(""); // Добавлено поле для телефона
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Registration submitted:", {
-      username,
-      email,
-      password,
-      confirmPassword,
-    });
+
+    if (password !== confirmPassword) {
+      alert("Пароли не совпадают!");
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post("/register", {
+        username,
+        email,
+        password,
+        phone,
+      });
+      if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        navigate("/");
+      }
+    } catch (error) {
+      console.error(
+        "Ошибка регистрации:",
+        error.response?.data || error.message
+      );
+      alert("Ошибка при регистрации. Пожалуйста, попробуйте снова.");
+    }
   };
 
   return (
@@ -33,6 +55,8 @@ const RegisterPage = () => {
           setPassword={setPassword}
           confirmPassword={confirmPassword}
           setConfirmPassword={setConfirmPassword}
+          phone={phone} // Добавлено
+          setPhone={setPhone} // Добавлено
           showPassword={showPassword}
           setShowPassword={setShowPassword}
           handleSubmit={handleSubmit}
