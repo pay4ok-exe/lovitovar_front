@@ -4,6 +4,7 @@ import axiosInstance from "../axios/axiosInstance";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Skeleton } from "@mui/material";
+import Profile from "../assets/profile.svg";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -46,7 +47,7 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
         <Header />
         <main className="max-w-6xl mx-auto px-4 py-8 pt-20">
           <Skeleton variant="rectangular" width="100%" height={400} />
@@ -65,14 +66,18 @@ const ProductDetailPage = () => {
 
   if (!product || Object.keys(product).length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Product not found</p>
+      <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
+        <Header />
+        <div className="flex-1 w-full pt-20 flex justify-center items-center">
+          <h1 className="text-black text-xl">Продукт не найдено</h1>
+        </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
       <Header />
       <main className="max-w-6xl mx-auto px-4 py-8 pt-20">
         <div className="flex flex-col md:flex-row gap-6">
@@ -114,20 +119,32 @@ const ProductDetailPage = () => {
             </p>
 
             <div className="mt-6 border-t pt-4">
-              <h3 className="text-lg font-semibold text-gray-800">Contact</h3>
-              {product.user ? (
+              <h3 className="text-lg font-semibold text-gray-800">Контакт</h3>
+              {product.userId ? (
                 <div className="flex items-center mt-4 space-x-4">
-                  <img
-                    src="https://via.placeholder.com/50"
-                    alt={product.user?.username || "User"}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                  <img src={Profile} className="w-7 h-7" />
                   <div>
                     <p className="font-medium text-gray-800">
-                      {product.user?.username || "Unknown User"}
+                      {product.userId?.username || "Имя продавца неизвестно"}
                     </p>
-                    <p className="text-sm text-gray-600">Seller</p>
+                    <p
+                      className="text-sm text-indigo-700 underline cursor-pointer"
+                      onClick={() => {
+                        if (product.userId?.phone) {
+                          navigator.clipboard.writeText(product.userId.phone); // Copy to clipboard
+                          alert("Номер телефона скопирован в буфер обмена!"); // Show alert
+                        }
+                      }}>
+                      {product.userId?.phone || "Телефон продавца неизвестен"}
+                    </p>
                   </div>
+                  {product.userId?.phone && (
+                    <a
+                      href={`tel:${product.userId.phone}`} // Use `tel:` to make it a calling link
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium focus:outline-none">
+                      Позвонить
+                    </a>
+                  )}
                 </div>
               ) : (
                 <p>Seller information not available</p>
@@ -139,10 +156,14 @@ const ProductDetailPage = () => {
         {/* Product Description */}
         <section className="mt-10 bg-white rounded-lg p-6 shadow-lg">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
-          <p className="text-gray-700">{product.description || "No description available"}</p>
+          <p className="text-gray-700">
+            {product.description || "No description available"}
+          </p>
         </section>
       </main>
-      <Footer />
+      <div className="bottom-0 absolute w-full">
+        <Footer />
+      </div>
 
       {/* Modal for Viewing Images */}
       {isModalOpen && (

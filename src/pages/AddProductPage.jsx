@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import axiosInstance from "../axios/axiosInstance";
 
 const AddProductPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const existingProduct = location.state?.post || null; // Get product data from state if editing
+
   const [product, setProduct] = useState({
-    title: "",
-    price: "",
-    description: "",
-    category: "",
-    images: [], // URL загруженных фотографий
+    title: existingProduct?.productName || "",
+    price: existingProduct?.price || "",
+    description: existingProduct?.description || "",
+    category: existingProduct?.categoryName || "",
+    images: existingProduct?.imagesUrl || [], // Preloaded images
+    isActive: existingProduct?.isActive || true, // Default to active
   });
+
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+
   const categories = [
     "Одежда и аксессуары",
     "Косметика и здоровье",
@@ -28,8 +34,11 @@ const AddProductPage = () => {
   ];
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProduct({ ...product, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setProduct({
+      ...product,
+      [name]: type === "checkbox" ? checked : value, // Handle checkbox for isActive
+    });
   };
 
   const handleFileChange = async (e) => {
@@ -54,7 +63,7 @@ const AddProductPage = () => {
 
       setProduct((prevProduct) => ({
         ...prevProduct,
-        images: [...prevProduct.images, ...uploadedUrls], // Сохраняем ссылки на фотографии
+        images: [...prevProduct.images, ...uploadedUrls], // Add new images
       }));
 
       setUploading(false);
@@ -69,23 +78,34 @@ const AddProductPage = () => {
     e.preventDefault();
     setLoading(true);
 
+    const productData = {
+      productName: product.title,
+      price: product.price,
+      description: product.description,
+      categoryName: product.category,
+      imagesUrl: product.images,
+      isActive: product.isActive, // Pass isActive status
+    };
+
     try {
-      const productData = {
-        productName: product.title,
-        price: product.price,
-        description: product.description,
-        categoryName: product.category,
-        imagesUrl: product.images, // Ссылки на загруженные фотографии
-      };
+      if (existingProduct) {
+        // If editing, update the product
+        await axiosInstance.patch(
+          `/products/${existingProduct._id}`,
+          productData
+        );
+        alert("Продукт успешно обновлен!");
+      } else {
+        // If creating, add a new product
+        await axiosInstance.post("/createProduct", productData);
+        alert("Продукт успешно добавлен!");
+      }
 
-      await axiosInstance.post("/createProduct", productData);
-
-      setLoading(false);
-      alert("Продукт успешно добавлен!");
-      navigate("/");
+      navigate("/"); // Redirect to user's posts
     } catch (error) {
-      console.error("Ошибка при добавлении продукта:", error);
-      alert("Ошибка при добавлении продукта.");
+      console.error("Ошибка при сохранении продукта:", error);
+      alert("Не удалось сохранить продукт.");
+    } finally {
       setLoading(false);
     }
   };
@@ -101,12 +121,13 @@ const AddProductPage = () => {
       <main className="flex-grow flex flex-col items-center pt-24 pb-10">
         <div className="max-w-4xl w-full flex flex-col items-center">
           <h1 className="text-4xl font-extrabold text-indigo-600 mb-8">
-            Разместить объявление
+            {existingProduct
+              ? "Редактировать объявление"
+              : "Разместить объявление"}
           </h1>
           <form
             className="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg"
-            onSubmit={handleSubmit} // Исправлено: передана функция handleSubmit
-          >
+            onSubmit={handleSubmit}>
             {/* Title */}
             <div className="mb-4">
               <label
@@ -215,11 +236,30 @@ const AddProductPage = () => {
                 ))}
               </div>
             </div>
+            {/* isActive Toggle */}
+            <div className="mb-6 flex items-center gap-2">
+              <span className="text-gray-700 font-medium">Активно</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="isActive" // Add the "name" attribute
+                  checked={product.isActive}
+                  onChange={handleChange}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 transition-all"></div>
+                <div className="w-5 h-5 bg-white rounded-full shadow-md absolute left-0.5 top-0.5 transition-transform peer-checked:translate-x-5"></div>
+              </label>
+            </div>
             <button
               type="submit"
               disabled={loading}
               className="w-full px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-300">
-              {loading ? "Сохранение..." : "Разместить объявление"}
+              {loading
+                ? "Сохранение..."
+                : existingProduct
+                ? "Сохранить изменения"
+                : "Разместить объявление"}
             </button>
           </form>
         </div>

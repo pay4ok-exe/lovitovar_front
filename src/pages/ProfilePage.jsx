@@ -1,5 +1,5 @@
-import React from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import PersonalData from "../components/PersonalData";
@@ -13,8 +13,26 @@ import RingingIcon from "../assets/ringing.png";
 import PostsIcon from "../assets/online.png";
 import SettingsIcon from "../assets/cogwheel.png";
 import LogoutIcon from "../assets/logout.png";
+import Profile from "../assets/profile.svg";
 
 const ProfilePage = () => {
+  const [username, setUsername] = useState("Имя пользователя");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUsername =
+      localStorage.getItem("username") || "Имя пользователя";
+    setUsername(storedUsername);
+  });
+
+  // Logout Function
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Remove token from localStorage
+    localStorage.removeItem("username"); // Optional: remove username
+    alert("Вы вышли из аккаунта."); // Optional alert
+    navigate("/login"); // Redirect to login page
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       <Header />
@@ -22,60 +40,16 @@ const ProfilePage = () => {
         {/* Wrapper to ensure alignment with Header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex">
           {/* Sidebar with icons and updated styling */}
-          {/* <aside className="w-64 bg-white p-4 shadow-md float-left mr-8">
-            <ul className="flex flex-col space-y-4">
-              <li>
-                <Link
-                  to="/profile/"
-                  className="flex items-center space-x-2 text-gray-700">
-                  <i className="fa fa-user-circle" aria-hidden="true"></i>
-                  <span>Личные данные</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/messages"
-                  className="flex items-center space-x-2 text-gray-700">
-                  <i className="fa fa-envelope" aria-hidden="true"></i>
-                  <span>Сообщения</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/notifications"
-                  className="flex items-center space-x-2 text-gray-700">
-                  <i className="fa fa-bell" aria-hidden="true"></i>
-                  <span>Уведомления</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/my-posts"
-                  className="flex items-center space-x-2 text-gray-700">
-                  <i className="fa fa-bullhorn" aria-hidden="true"></i>
-                  <span>Мои объявления</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/profile/settings"
-                  className="flex items-center space-x-2 text-gray-700">
-                  <i className="fa fa-cog" aria-hidden="true"></i>
-                  <span>Настройки</span>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/"
-                  className="flex items-center space-x-2 text-gray-700">
-                  <i className="fa fa-sign-out" aria-hidden="true"></i>
-                  <span>Выйти</span>
-                </Link>
-              </li>
-            </ul>
-          </aside> */}
-
           <aside className="pl-8 w-64 bg-white p-4 shadow-md flex flex-col justify-around rounded-lg mr-4">
+            {/* Profile Section */}
+            <div className="flex flex-col items-center mb-8">
+              <img
+                src={Profile}
+                alt="Профиль"
+                className="w-20 h-20 shadow-md my-4"
+              />
+              <p className="text-lg font-bold text-gray-800">{username}</p>
+            </div>
             <ul className="space-y-8 mt-4">
               <li>
                 <Link
@@ -119,12 +93,12 @@ const ProfilePage = () => {
               </li>
             </ul>
             <div className="mt-auto mb-4">
-              <Link
-                to="/"
-                className="flex items-center space-x-2 text-gray-700">
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 text-gray-700 w-full">
                 <img src={LogoutIcon} alt="Выйти" className="h-5 w-5" />
                 <span>Выйти</span>
-              </Link>
+              </button>
             </div>
           </aside>
 

@@ -1,153 +1,130 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../axios/axiosInstance"; // Import your configured Axios instance
 
 const PersonalData = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-
-  // State for password change process
-  const [changePassword, setChangePassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [showPasswordFields, setShowPasswordFields] = useState(false);
+  const [username, setUsername] = useState(""); // User's username
+  const [email, setEmail] = useState(""); // User's email
+  const [phone, setPhone] = useState(""); // User's phone number
+  const [isEditing, setIsEditing] = useState(false); // Edit mode state
   const navigate = useNavigate();
 
-  // Submit Personal Data Changes
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Personal Data Updated:", {
-      firstName,
-      lastName,
-      email,
-      phone,
-    });
-  };
+  // Fetch user profile data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axiosInstance.get("/profile");
+        const { username, email, phone } = response.data;
 
-  // Handle Password Change Submission
-  const handlePasswordSubmit = (event) => {
-    event.preventDefault();
-    if (currentPassword === "correct_password") {
-      // Replace with real password validation logic
-      setShowPasswordFields(true);
-    } else {
-      alert("Incorrect current password.");
-    }
-  };
+        // Set user data to state
+        setUsername(username || "");
+        setEmail(email || "");
+        setPhone(phone || "");
+      } catch (error) {
+        console.error("Ошибка при загрузке данных пользователя:", error);
+        alert("Не удалось загрузить данные пользователя.");
+      }
+    };
 
-  // Submit New Password
-  const handleNewPasswordSubmit = (event) => {
-    event.preventDefault();
-    if (newPassword === confirmNewPassword) {
-      console.log("New password set:", newPassword);
-      alert("Password changed successfully!");
-      setChangePassword(false);
-      setShowPasswordFields(false);
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmNewPassword("");
-    } else {
-      alert("Passwords do not match!");
+    fetchUserData();
+  }, []);
+
+  // Submit updated user data to the backend
+  const handleSubmit = async () => {
+    // Prepare the data to send (only include updated fields)
+    const updateData = {};
+    if (username) updateData.username = username;
+    if (phone) updateData.phone = phone;
+    if (email) updateData.email = email;
+
+    try {
+      // Send update request to the backend
+      const response = await axiosInstance.put("/profile", updateData);
+
+      // Notify the user of success
+      alert("Данные успешно обновлены!");
+      console.log("Обновленные данные:", response.data);
+
+      setIsEditing(false); // Disable edit mode after saving
+    } catch (error) {
+      console.error("Ошибка при обновлении данных:", error);
+      alert(
+        error.response?.data?.message ||
+          "Не удалось обновить данные. Попробуйте снова."
+      );
     }
+
+    setIsEditing(false);
   };
 
   return (
     <div className="bg-white p-6 shadow-sm rounded-lg">
       <h2 className="text-xl font-semibold mb-4">Личные данные</h2>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-4">
+        <div>
           <input
             type="text"
-            placeholder="Имя"
-            className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Фамилия"
-            className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            placeholder="Имя пользователя"
+            className={`${
+              !isEditing ? "cursor-not-allowed" : "cursor-text"
+            } appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={!isEditing} // Disable input unless editing
           />
         </div>
-        <input
-          type="email"
-          placeholder="Электронная почта"
-          className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="tel"
-          placeholder="Телефон"
-          className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <button
-          type="submit"
-          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          Сохранить изменения
-        </button>
-      </form>
+        <div>
+          <input
+            type="email"
+            placeholder="Электронная почта"
+            className={`cursor-not-allowed appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+            value={email}
+            disabled={true} // Disable input unless editing
+          />
+        </div>
+        <div>
+          <input
+            type="number"
+            placeholder="Телефон"
+            className={`${
+              !isEditing ? "cursor-not-allowed" : "cursor-text"
+            } appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            pattern="\+?\d{10,15}"
+            disabled={!isEditing} // Disable input unless editing
+          />
+        </div>
 
-      {/* Change Password Section */}
-      <div className="mt-8">
-        {!changePassword ? (
+        {/* Edit and Save Buttons */}
+        {!isEditing ? (
           <button
-            onClick={() => setChangePassword(true)}
-            className="text-indigo-600 hover:text-indigo-500">
-            Изменить пароль
+            type="button"
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            onClick={() => setIsEditing(true)} // Enable editing
+          >
+            Редактировать
           </button>
         ) : (
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <input
-              type="password"
-              placeholder="Текущий пароль"
-              className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Проверить пароль
-            </button>
-            <button
-              onClick={() => navigate("/forgot")}
-              className="text-indigo-600 hover:text-indigo-500">
-              Забыли пароль?
-            </button>
-          </form>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Сохранить изменения
+          </button>
         )}
+      </form>
 
-        {/* New Password Fields */}
-        {showPasswordFields && (
-          <form onSubmit={handleNewPasswordSubmit} className="space-y-4 mt-4">
-            <input
-              type="password"
-              placeholder="Новый пароль"
-              className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Подтвердите новый пароль"
-              className="appearance-none rounded relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Сохранить новый пароль
-            </button>
-          </form>
-        )}
+      {/* Forgot Password Link */}
+      <div className="mt-8">
+        <button
+          onClick={() => {
+            localStorage.setItem("current-email", email);
+            navigate("/forgot");
+          }}
+          className="text-indigo-600 hover:text-indigo-500">
+          Забыли пароль?
+        </button>
       </div>
     </div>
   );
