@@ -8,11 +8,21 @@ const Header = () => {
   const isAuthenticated = !!localStorage.getItem("token");
   const username = localStorage.getItem("username");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     navigate("/login");
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/?search=${searchQuery.trim()}`); // Navigate to HomePage with search query
+    } else {
+      navigate(`/`); // Navigate to the homepage without search query
+    }
   };
 
   return (
@@ -46,11 +56,14 @@ const Header = () => {
           </nav>
           {/* Search Bar */}
           <div className="flex items-center flex-1 ml-6">
-            <form className="w-full max-w-xl relative">
+            <form onSubmit={handleSearch} className="w-full max-w-xl relative">
               <input
                 type="text"
                 className="w-full border border-gray-300 rounded-md pl-4 pr-10 py-2"
                 placeholder="Поиск..."
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                }}
               />
               <button
                 type="submit"

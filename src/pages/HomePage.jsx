@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // Import to handle URL search params
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FilterProvider } from "../context/FilterContext";
 import CategorySection from "../components/CategorySection";
 import ListingSection from "../components/ListingSection";
 import axiosInstance from "../axios/axiosInstance";
-import { Skeleton, Grid } from "@mui/material"; // Добавлено
 
 // Define categories (предположим, они статичны)
 import servicesImage from "../assets/services.png";
@@ -42,19 +42,25 @@ const priceRanges = [
 ];
 
 const HomePage = () => {
-  const [listings, setListings] = useState([]); // Состояние для данных с бэкенда
-  const [loading, setLoading] = useState(true); // Состояние для загрузки
+  const location = useLocation(); // Used to retrieve the search query from the URL
+  const [listings, setListings] = useState([]); // State for backend data
+  const [loading, setLoading] = useState(true); // Loading state
   const [allProducts, setAllProducts] = useState([]); // Full list of products
-  const [displayedProducts, setDisplayedProducts] = useState([]); // Products currently shown
-  const [productLimit, setProductLimit] = useState(12);
+  const [displayedProducts, setDisplayedProducts] = useState([]); // Currently shown products
+  const [productLimit, setProductLimit] = useState(12); // Initial number of products to show
 
   useEffect(() => {
     const fetchProducts = async () => {
+      const searchParams = new URLSearchParams(location.search);
+      const searchQuery = searchParams.get("search") || ""; // Get the search query if present
+
       try {
-        const response = await axiosInstance.get("/products");
+        const response = await axiosInstance.get(
+          `/products${searchQuery ? `?name=${searchQuery}` : ""}` // If a search query is provided, include it in the request
+        );
         const all = response.data.products; // Assume this returns all products
-        setAllProducts(all); // Save all products in state
-        setDisplayedProducts(all.slice(0, productLimit)); // Show only the first 12
+        setAllProducts(all); // Save all products
+        setDisplayedProducts(all.slice(0, productLimit)); // Show only the first `productLimit` products
       } catch (error) {
         console.error("Ошибка при загрузке продуктов:", error);
       } finally {
@@ -63,10 +69,10 @@ const HomePage = () => {
     };
 
     fetchProducts();
-  }, [productLimit]);
+  }, [location.search, productLimit]); // Refetch products if the search query or product limit changes
 
   const handleShowMore = () => {
-    setProductLimit((prevLimit) => prevLimit + 10); // Add 10 more products to the limit
+    setProductLimit((prevLimit) => prevLimit + 10); // Increment the product limit by 10
   };
 
   return (
@@ -75,12 +81,12 @@ const HomePage = () => {
         <Header />
         <main className="pt-20">
           <CategorySection categories={categories} />
-          {/* Отображаем Skeleton или ListingSection */}
+          {/* ListingSection handles both loading and displaying filtered products */}
           <ListingSection
             listings={displayedProducts}
             categories={categories}
             loading={loading}
-            handleShowMore={handleShowMore} // Pass the handler for the Show More button
+            handleShowMore={handleShowMore} // Pass the handler for the "Show More" button
             hasMore={displayedProducts.length < allProducts.length} // Check if there are more products to load
             priceRanges={priceRanges}
           />
