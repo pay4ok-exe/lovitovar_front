@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import axiosInstance from "../axios/axiosInstance";
 
 const AddProductPage = () => {
   const navigate = useNavigate();
@@ -10,20 +11,58 @@ const AddProductPage = () => {
     price: "",
     description: "",
     category: "",
-    image: null,
+    images: [], // URL загруженных фотографий
   });
-
   const [loading, setLoading] = useState(false);
-
-  const categories = ["Электроника", "Одежда", "Дом", "Услуги"];
+  const [uploading, setUploading] = useState(false);
+  const categories = [
+    "Одежда и аксессуары",
+    "Косметика и здоровье",
+    "Услуги",
+    "Автотовары",
+    "Электроника",
+    "Товары для детей",
+    "Товары для дома",
+    "Спорт и отдых",
+    "Другое",
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProduct({ ...product, [name]: value });
   };
 
-  const handleFileChange = (e) => {
-    setProduct({ ...product, image: e.target.files[0] });
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setUploading(true);
+
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    try {
+      const response = await axiosInstance.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const uploadedUrls = response.data.files.map((file) => file.fileUrl);
+
+      setProduct((prevProduct) => ({
+        ...prevProduct,
+        images: [...prevProduct.images, ...uploadedUrls], // Сохраняем ссылки на фотографии
+      }));
+
+      setUploading(false);
+    } catch (error) {
+      console.error("Ошибка загрузки файлов:", error);
+      alert("Не удалось загрузить фотографии.");
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -31,55 +70,48 @@ const AddProductPage = () => {
     setLoading(true);
 
     try {
-      // Form submission logic (e.g., POST request)
-      // Replace the following with your backend API call
-      const formData = new FormData();
-      formData.append("title", product.title);
-      formData.append("price", product.price);
-      formData.append("description", product.description);
-      formData.append("category", product.category);
-      formData.append("image", product.image);
+      const productData = {
+        productName: product.title,
+        price: product.price,
+        description: product.description,
+        categoryName: product.category,
+        imagesUrl: product.images, // Ссылки на загруженные фотографии
+      };
 
-      // Simulated API call (replace with axiosInstance or fetch)
-      setTimeout(() => {
-        setLoading(false);
-        alert("Объявление успешно добавлено!");
-        navigate("/"); // Redirect after success
-      }, 2000);
+      await axiosInstance.post("/createProduct", productData);
+
+      setLoading(false);
+      alert("Продукт успешно добавлен!");
+      navigate("/");
     } catch (error) {
       console.error("Ошибка при добавлении продукта:", error);
-      alert("Не удалось добавить объявление.");
+      alert("Ошибка при добавлении продукта.");
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Check if the token exists in localStorage
     const token = localStorage.getItem("token");
-    if (!token) {
-      // Navigate to /auth-required if no token is found
-      navigate("/auth-required");
-    }
+    if (!token) navigate("/auth-required");
   }, [navigate]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Header */}
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header />
-      {/* Main Content */}
       <main className="flex-grow flex flex-col items-center pt-24 pb-10">
-        <div className="max-w-6xl w-full flex flex-col items-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">
+        <div className="max-w-4xl w-full flex flex-col items-center">
+          <h1 className="text-4xl font-extrabold text-indigo-600 mb-8">
             Разместить объявление
           </h1>
           <form
-            className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md"
-            onSubmit={handleSubmit}>
+            className="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg"
+            onSubmit={handleSubmit} // Исправлено: передана функция handleSubmit
+          >
             {/* Title */}
             <div className="mb-4">
               <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="title">
+                htmlFor="title"
+                className="block text-gray-700 font-semibold mb-2">
                 Название продукта
               </label>
               <input
@@ -89,14 +121,14 @@ const AddProductPage = () => {
                 value={product.title}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             {/* Price */}
             <div className="mb-4">
               <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="price">
+                htmlFor="price"
+                className="block text-gray-700 font-semibold mb-2">
                 Цена
               </label>
               <input
@@ -106,14 +138,14 @@ const AddProductPage = () => {
                 value={product.price}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             {/* Description */}
             <div className="mb-4">
               <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="description">
+                htmlFor="description"
+                className="block text-gray-700 font-semibold mb-2">
                 Описание
               </label>
               <textarea
@@ -122,14 +154,14 @@ const AddProductPage = () => {
                 value={product.description}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             {/* Category */}
             <div className="mb-4">
               <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="category">
+                htmlFor="category"
+                className="block text-gray-700 font-semibold mb-2">
                 Категория
               </label>
               <select
@@ -138,7 +170,7 @@ const AddProductPage = () => {
                 value={product.category}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="">Выберите категорию</option>
                 {categories.map((cat, index) => (
                   <option key={index} value={cat}>
@@ -147,33 +179,51 @@ const AddProductPage = () => {
                 ))}
               </select>
             </div>
-            {/* Image */}
+            {/* Images */}
             <div className="mb-6">
               <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="image">
-                Изображение
+                htmlFor="images"
+                className="block text-gray-700 font-semibold mb-2">
+                Изображения
               </label>
-              <input
-                type="file"
-                id="image"
-                name="image"
-                onChange={handleFileChange}
-                required
-                className="w-full text-gray-700"
-              />
+              <div className="flex items-center">
+                <input
+                  type="file"
+                  id="images"
+                  name="files"
+                  onChange={handleFileChange}
+                  multiple
+                  className="hidden"
+                />
+                <label
+                  htmlFor="images"
+                  className="px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 cursor-pointer transition duration-300">
+                  Загрузить фотографии
+                </label>
+                {uploading && (
+                  <span className="text-indigo-500 ml-2">Загрузка...</span>
+                )}
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-4">
+                {product.images.map((src, index) => (
+                  <img
+                    key={index}
+                    src={src}
+                    alt={`uploaded-${index}`}
+                    className="w-full h-32 object-cover rounded-lg shadow-md"
+                  />
+                ))}
+              </div>
             </div>
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-indigo-500 text-white font-bold rounded-lg hover:bg-indigo-600 transition duration-300">
-              {loading ? "Загрузка..." : "Разместить"}
+              className="w-full px-6 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 transition duration-300">
+              {loading ? "Сохранение..." : "Разместить объявление"}
             </button>
           </form>
         </div>
       </main>
-      {/* Footer */}
       <Footer />
     </div>
   );

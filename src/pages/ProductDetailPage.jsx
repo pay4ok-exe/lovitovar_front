@@ -3,22 +3,22 @@ import { useParams } from "react-router-dom";
 import axiosInstance from "../axios/axiosInstance";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Skeleton } from "@mui/material"; // Для отображения Skeleton
+import { Skeleton } from "@mui/material";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState(null); // Данные продукта
+  const [product, setProduct] = useState(null); // Product data
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [loading, setLoading] = useState(true); // Состояние загрузки
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axiosInstance.get(`/products/${id}`);
-        setProduct(response.data.product);
+        setProduct(response.data.product || {}); // Ensure product is an object
       } catch (error) {
-        console.error("Ошибка при загрузке продукта:", error);
+        console.error("Error loading product:", error);
       } finally {
         setLoading(false);
       }
@@ -36,12 +36,12 @@ const ProductDetailPage = () => {
 
   const showNextImage = () =>
     setCurrentImageIndex(
-      (prevIndex) => (prevIndex + 1) % product.imagesUrl.length
+      (prevIndex) => (prevIndex + 1) % (product.imagesUrl?.length || 1)
     );
 
   const showPreviousImage = () =>
     setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? product.imagesUrl.length - 1 : prevIndex - 1
+      prevIndex === 0 ? (product.imagesUrl?.length || 1) - 1 : prevIndex - 1
     );
 
   if (loading) {
@@ -63,10 +63,10 @@ const ProductDetailPage = () => {
     );
   }
 
-  if (!product) {
+  if (!product || Object.keys(product).length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Продукт не найден</p>
+        <p>Product not found</p>
       </div>
     );
   }
@@ -75,111 +75,101 @@ const ProductDetailPage = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <main className="max-w-6xl mx-auto px-4 py-8 pt-20">
-        {/* Верхний блок с изображениями и основной информацией */}
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Галерея изображений */}
+          {/* Image Gallery */}
           <div className="flex-1 flex gap-4">
-            {product.imagesUrl.slice(0, 2).map((img, index) => (
+            {product.imagesUrl?.slice(0, 2).map((img, index) => (
               <div
                 key={index}
                 className="w-1/2 cursor-pointer"
                 onClick={() => openModal(index)}>
                 <img
                   src={img}
-                  alt={`Изображение продукта ${index + 1}`}
+                  alt={`Product Image ${index + 1}`}
                   className="w-full h-80 object-cover rounded-md"
                 />
               </div>
-            ))}
+            )) || <p>No images available</p>}
           </div>
 
-          {/* Информация о цене и контактах */}
+          {/* Product Info */}
           <div className="w-full md:w-1/3 bg-white rounded-lg p-6 shadow-lg">
             <h2 className="text-2xl font-bold text-gray-900">
-              {product.productName}
+              {product.productName || "No Name"}
             </h2>
             <h3 className="text-2xl font-bold text-gray-900 mt-4">
-              {product.price} ₽
+              {product.price ? `${product.price} ₽` : "Price not available"}
             </h3>
             <p className="text-sm text-gray-600 mt-2">
-              Категория:{" "}
+              Category:{" "}
               <span className="font-medium">
-                {product.categoryName || "Не указано"}
+                {product.categoryName || "Not specified"}
               </span>
             </p>
             <p className="text-sm text-gray-600 mt-2">
-              Описание:{" "}
-              <span className="font-medium">{product.description}</span>
+              Description:{" "}
+              <span className="font-medium">
+                {product.description || "No description available"}
+              </span>
             </p>
 
             <div className="mt-6 border-t pt-4">
-              <h3 className="text-lg font-semibold text-gray-800">Контакты</h3>
-              <div className="flex items-center mt-4 space-x-4">
-                <img
-                  src="https://via.placeholder.com/50"
-                  alt={product.user.username}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-medium text-gray-800">
-                    {product.user.username}
-                  </p>
-                  <p className="text-sm text-gray-600">Продавец</p>
+              <h3 className="text-lg font-semibold text-gray-800">Contact</h3>
+              {product.user ? (
+                <div className="flex items-center mt-4 space-x-4">
+                  <img
+                    src="https://via.placeholder.com/50"
+                    alt={product.user?.username || "User"}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-800">
+                      {product.user?.username || "Unknown User"}
+                    </p>
+                    <p className="text-sm text-gray-600">Seller</p>
+                  </div>
                 </div>
-              </div>
-              <div className="flex space-x-4 mt-4">
-                <button className="flex-1 px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-600">
-                  Позвонить
-                </button>
-                <button className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 font-bold rounded hover:bg-gray-300">
-                  Написать
-                </button>
-              </div>
+              ) : (
+                <p>Seller information not available</p>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Описание продукта */}
+        {/* Product Description */}
         <section className="mt-10 bg-white rounded-lg p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Описание</h2>
-          <p className="text-gray-700">{product.description}</p>
-          <ul className="mt-4 list-disc list-inside text-gray-700 space-y-2">
-            <li>Цена: {product.price} ₽</li>
-            <li>Категория: {product.categoryName}</li>
-          </ul>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
+          <p className="text-gray-700">{product.description || "No description available"}</p>
         </section>
       </main>
       <Footer />
 
-      {/* Модальное окно для просмотра изображений */}
+      {/* Modal for Viewing Images */}
       {isModalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-          aria-label="Просмотр изображения">
+          aria-label="Image Viewer">
           <button
             className="absolute top-6 right-6 bg-red-500 text-white font-bold rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-red-600 transition duration-300"
-            onClick={closeModal}
-            aria-label="Закрыть модальное окно">
+            onClick={closeModal}>
             ✕
           </button>
 
           <div className="relative w-full max-w-4xl mx-4">
             <img
-              src={product.imagesUrl[currentImageIndex]}
-              alt={`Изображение ${currentImageIndex + 1}`}
+              src={product.imagesUrl?.[currentImageIndex]}
+              alt={`Image ${currentImageIndex + 1}`}
               className="w-full object-contain max-h-[90vh] rounded-lg"
             />
             <div className="absolute inset-0 flex justify-between items-center px-4">
               <button
                 className="text-center w-12 h-12 flex items-center justify-center rounded-full text-indigo-700 bg-white border border-indigo-500 hover:bg-indigo-700 hover:text-white transition duration-300"
-                onClick={showPreviousImage}
-                aria-label="Предыдущее изображение">
+                onClick={showPreviousImage}>
                 ❮
               </button>
               <button
                 className="text-center w-12 h-12 flex items-center justify-center rounded-full text-indigo-700 bg-white border border-indigo-500 hover:bg-indigo-700 hover:text-white transition duration-300"
-                onClick={showNextImage}
-                aria-label="Следующее изображение">
+                onClick={showNextImage}>
                 ❯
               </button>
             </div>

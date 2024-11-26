@@ -1,9 +1,20 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
+import Profile from "../assets/profile.svg";
 
 const Header = () => {
+  const navigate = useNavigate();
   const isAuthenticated = !!localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    navigate("/login");
+  };
+
   return (
     <header className="fixed top-0 w-full z-10 bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,11 +67,43 @@ const Header = () => {
               className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
               Разместить объявление
             </Link>
-            <Link
-              to="/login"
-              className="whitespace-nowrap text-base font-medium text-indigo-600 px-6 py-2 hover:text-indigo-700 border-indigo-600 border rounded-md">
-              Войти
-            </Link>
+            {isAuthenticated ? (
+              <div className="relative">
+                {/* Profile Button */}
+                <button
+                  className="flex items-center text-base font-medium text-indigo-600 px-6 py-2 hover:text-indigo-700 border-indigo-600 border rounded-md focus:outline-none"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}>
+                  <span className="mr-2">{username || "Мой профиль"}</span>
+                  <img
+                    src={Profile} // Replace with your profile image path
+                    alt="Профиль"
+                    className="w-6 h-6 rounded-full"
+                  />
+                </button>
+
+                {/* Dropdown Menu */}
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-20">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                      Мой профиль
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                      Выйти
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="whitespace-nowrap text-base font-medium text-indigo-600 px-6 py-2 hover:text-indigo-700 border-indigo-600 border rounded-md">
+                Войти
+              </Link>
+            )}
           </div>
         </div>
       </div>

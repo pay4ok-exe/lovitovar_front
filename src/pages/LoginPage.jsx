@@ -19,14 +19,15 @@ const LoginPage = () => {
       const response = await axiosInstance.post("/login", { email, password });
 
       // Handle successful login
-      const { token, ...userData } = response.data;
-      console.log("Login successful:", userData);
+      const { token, username } = response.data;
 
       // Save token to localStorage
       localStorage.setItem("token", token);
+      localStorage.setItem("username", username);
 
       // Navigate to the profile page
-      navigate("/profile");
+      alert("Login successful!");
+      navigate("/");
     } catch (error) {
       console.error(
         "Login failed:",

@@ -58,9 +58,7 @@ const ListingSection = ({ listings, categories, loading }) => {
                       type="checkbox"
                       className="form-checkbox text-indigo-600"
                     />
-                    <span className="ml-2">
-                      {price.range} ({price.count})
-                    </span>
+                    <span className="ml-2">{price.range}</span>
                   </label>
                 </div>
               ))}
@@ -73,7 +71,7 @@ const ListingSection = ({ listings, categories, loading }) => {
           <Grid2
             container
             spacing={2}
-            justifyContent="space-between"
+            justifyContent="start"
             alignItems="center">
             {!loading
               ? filteredListings.map((listing, index) => (
