@@ -61,17 +61,17 @@ const Header = () => {
           </div>
 
           {/*  */}
-          <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0 gap-2">
+          <div className="hidden md:flex items-center justify-end gap-2">
             <Link
               to={isAuthenticated ? "/add-product" : "/auth-required"}
-              className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+              className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">
               Разместить объявление
             </Link>
             {isAuthenticated ? (
               <div className="relative">
                 {/* Profile Button */}
-                <button
-                  className="flex items-center text-base font-medium text-indigo-600 px-6 py-2 hover:text-indigo-700 border-indigo-600 border rounded-md focus:outline-none"
+                <div
+                  className="flex items-center justify-between px-3 text-base cursor-pointer font-medium text-indigo-600  py-2 hover:text-indigo-700 border-indigo-600 border rounded-md focus:outline-none"
                   onClick={() => setDropdownOpen(!dropdownOpen)}>
                   <span className="mr-2">{username || "Мой профиль"}</span>
                   <img
@@ -79,7 +79,7 @@ const Header = () => {
                     alt="Профиль"
                     className="w-6 h-6 rounded-full"
                   />
-                </button>
+                </div>
 
                 {/* Dropdown Menu */}
                 {dropdownOpen && (
