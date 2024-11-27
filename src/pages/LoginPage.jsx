@@ -21,9 +21,9 @@ const LoginPage = () => {
       // Handle successful login
       const { token, username } = response.data;
 
-      // Save token to localStorage
-      localStorage.setItem("token", token);
-      localStorage.setItem("username", username);
+      // Save token to sessionStorage
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("username", username);
 
       // Navigate to the profile page
       alert("Login successful!");

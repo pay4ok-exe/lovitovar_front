@@ -9,6 +9,7 @@ import ForgotPage from "./pages/ForgotPage";
 import AuthRequiredPage from "./pages/AuthRequiredPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import AddProductPage from "./pages/AddProductPage";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
 function App() {
   return (
@@ -26,6 +27,14 @@ function App() {
         {/* ProfilePage handles sub-routes */}
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/add-product" element={<AddProductPage />} />
+        <Route
+          path="/profile/*"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

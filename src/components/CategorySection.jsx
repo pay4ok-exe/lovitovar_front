@@ -13,7 +13,7 @@ const CategorySection = ({ categories }) => {
               key={index}
               className={`relative rounded-lg bg-[#ebeae8] flex flex-row-reverse cursor-pointer ${
                 selectedCategories.includes(category.name)
-                  ? "bg-[#e8d9bc]"
+                  ? "bg-[#e9d7b3]"
                   : "bg-[#ebeae8]"
               }`}
               onClick={() => toggleCategory(category.name)}>

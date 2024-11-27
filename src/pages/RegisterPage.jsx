@@ -30,8 +30,8 @@ const RegisterPage = () => {
         phone,
       });
       if (response.status === 200) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("username", response.data.username);
+        sessionStorage.setItem("token", response.data.token);
+        sessionStorage.setItem("username", response.data.username);
         navigate("/");
       }
     } catch (error) {

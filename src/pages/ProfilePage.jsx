@@ -21,14 +21,14 @@ const ProfilePage = () => {
 
   useEffect(() => {
     const storedUsername =
-      localStorage.getItem("username") || "Имя пользователя";
+      sessionStorage.getItem("username") || "Имя пользователя";
     setUsername(storedUsername);
   });
 
   // Logout Function
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove token from localStorage
-    localStorage.removeItem("username"); // Optional: remove username
+    sessionStorage.removeItem("token"); // Remove token from sessionStorage
+    sessionStorage.removeItem("username"); // Optional: remove username
     alert("Вы вышли из аккаунта."); // Optional alert
     navigate("/login"); // Redirect to login page
   };

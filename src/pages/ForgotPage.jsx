@@ -15,7 +15,7 @@ const ForgotPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const current_email = localStorage.getItem("current-email");
+    const current_email = sessionStorage.getItem("current-email");
     if (current_email) setEmail(current_email);
   }, []);
 
@@ -41,7 +41,7 @@ const ForgotPage = () => {
         );
       } finally {
         setLoading(false);
-        localStorage.removeItem("current-email");
+        sessionStorage.removeItem("current-email");
       }
     } else if (step === 2) {
       try {
@@ -86,7 +86,7 @@ const ForgotPage = () => {
         alert(error.response?.data?.message || "Не удалось сбросить пароль.");
       } finally {
         setLoading(false);
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
       }
     }
   };

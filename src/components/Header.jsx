@@ -5,14 +5,15 @@ import Profile from "../assets/profile.svg";
 
 const Header = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem("token");
-  const username = localStorage.getItem("username");
+  const isAuthenticated = !!sessionStorage.getItem("token");
+  const username = sessionStorage.getItem("username");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("username");
+    sessionStorage.se;
     navigate("/login");
   };
 

@@ -119,7 +119,7 @@ const PersonalData = () => {
       <div className="mt-8">
         <button
           onClick={() => {
-            localStorage.setItem("current-email", email);
+            sessionStorage.setItem("current-email", email);
             navigate("/forgot");
           }}
           className="text-indigo-600 hover:text-indigo-500">
