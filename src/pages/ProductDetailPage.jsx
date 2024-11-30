@@ -103,7 +103,7 @@ const ProductDetailPage = () => {
               {product.productName || "No Name"}
             </h2>
             <h3 className="text-2xl font-bold text-gray-900 mt-4">
-              {product.price ? `${product.price} ₽` : "Price not available"}
+              {product.price ? `${product.price} BYN` : "Price not available"}
             </h3>
             <p className="text-sm text-gray-600 mt-2">
               Category:{" "}

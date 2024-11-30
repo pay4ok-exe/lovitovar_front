@@ -128,7 +128,7 @@ const ListingSection = ({
                         </p>
                         <div className="flex justify-between items-center mt-4 gap-2">
                           <span className="text-xl font-semibold">
-                            {listing.price} ₽
+                            {listing.price} BYN
                           </span>
                           <button className="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700">
                             Подробнее
